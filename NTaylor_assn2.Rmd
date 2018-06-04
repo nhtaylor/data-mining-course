@@ -1,0 +1,235 @@
+---
+title: "QMSS 4058: Assignment #2"
+author: "Nathan Taylor"
+date: "Tuesday, October 10, 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: yeti
+    highlight: tango
+---
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+apts <- readRDS(gzcon(url('https://courseworks.columbia.edu/x/pJdP39')))
+library(MASS)
+library(tidyverse)
+library()
+```
+
+## 1. Matrix Algebra
+**Prompt: Question 4 on pages 301 – 302 of Moore and Siegel. You can use R.**
+
+```{r, error = TRUE}
+A <- matrix(c(5, 6, 1, 2, 2, 3),
+            nrow = 2,
+            ncol = 3)
+A
+
+B <- matrix(c(3, -2, 4, -3, 5, 6),
+            nrow = 2,
+            ncol = 3)
+B
+
+C <- matrix(c(1, -5, -3, 2, 3, 1),
+            nrow = 3,
+            ncol = 2)
+C
+
+D <- matrix(c(2, 4, 1, 3),
+            nrow = 2,
+            ncol = 2)
+D
+
+# 4.a  --  Cannot add two matrices that do not have the same size/ 
+# dimensions, see error below
+A + C
+
+
+# 4.b
+A - B
+
+# 4.c
+A + (5 * B)
+
+# 4.d
+3 * A
+
+# 4.e
+(2 * B) - (5 * A)
+
+# 4.f
+t(B) - C
+
+# 4.g   --  Cannot multiply two matrices that do not have the same size/
+# dimensions, see error below
+B %*% A
+
+
+# 4.h
+D %*% A
+
+# 4.i --  Cannot multiply two matrices that do not have the same size
+# dimensions, see error below
+A %*% D
+
+# 4.j
+C %*% D
+
+# 4.k
+B %*% C
+
+# 4.l
+C %*% B
+```
+
+
+## 2. Inverse of Matrices
+**Prompt: Is it true that ... presuming that all matrices and vectors are conformable for multiplication and that W^-􀀀1 exists? Show your work as to why or whyot n.**
+
+It is true. Please note that I am sure how to make the math code below 'tidy', 
+so please forgive the code exceeding the 80-characters line limit as well as 
+any other formatting oversights.
+
+
+\[
+(W + xy^{\top})^{-1} = W^{-1} - \frac{W^{-1}xy^{\top}W^{-1}}{1 + y^{\top}W^{-1}x}
+\]
+ 
+ 
+\[
+\frac{1}{W + xy^{\top}} = \frac{1}{W} - \frac{W^{-1}xy^{\top}W^{-1}}{1 + xy^{\top}W^{-1}}
+\]
+
+
+\[
+\frac{1}{W + xy^{\top}} = \frac{(1 + W^{-1}xy^{\top}) - W(W^{-1}xy^{\top}W^{-1})}{W(1 + xy^{\top}W^{-1})}
+\]
+
+
+\[
+\frac{1}{W + xy^{\top}} = \frac{1 + W^{-1}xy^{\top} - xy^{\top}W^{-1}}{W +Ixy^{\top}}
+\]
+
+
+\[
+\frac{1}{W + xy^{\top}} = \frac{1}{W +xy^{\top}}
+\]
+
+
+## 3. Apartment Prices
+**Prompt: Use the functions in the ggplot2 package to create a scatterplot between totalprice and one other numeric variable (possibly with transformations, rescalings, etc.) using relevant discrete variables to distinguish points by size, color, and / or symbol that is explained in a legend. What do you discover by visualizing the data this way?**
+
+I wanted to examine the relationship between the area of an apartment and the 
+total price for the apartment in the data frame **apts**. Using ggplot, I 
+graphed *totalprice* as a function of *area* to examine the relationship.
+```{r}
+aptsp <- ggplot(apts)
+aptsp <- aptsp + geom_point(mapping = aes(x = area, y = totalprice))
+aptsp
+```
+
+After a quick glance, it appears that there is a relationship between the 
+square meterage of an apartment and its overall price. With 109 observations,
+there doesn't appear to be any need to rescale the range on either the x- or 
+y-axis. However, I was curious if the number of rooms an apartment has would 
+influence their distribution on this scatter plot, so I included that variable 
+below.
+```{r}
+aptsp <- ggplot(apts)
+aptsp <- aptsp + geom_point(mapping = aes(x = area, y = totalprice,
+                                          color = rooms))
+aptsp <- aptsp + theme(legend.position = "top")
+aptsp
+```
+
+This scatter plot reinforces the fact that apartments with more area and a 
+higher price are more likely to have 5 or 6 rooms in comparison to those 
+with less space and priced lower. This finding makes logical sense because 
+apartments with more floor area would likely also have more rooms. The color
+gradient on the map looks to do a sufficient enough job discerning the number
+of rooms within the data frame. Below is an attempt to fit a line on the 
+relationship.
+```{r}
+aptsp <- ggplot(apts,
+                mapping = aes(x = area, y = totalprice,
+                              color = rooms))
+aptsp <- aptsp + geom_point() + geom_smooth(se = FALSE, col = "red")
+aptsp <- aptsp + theme(legend.position = "top")
+aptsp
+```
+
+It almost appears linear, but has some bumps and a curve to it. 
+
+## 4. Making Plots
+**Prompt: Look at help(chickwts) for information on the chickwts data.frame. Produce a box-and-whiskers plot of weight for each of the six types of feed using the ggplot2 package. Interpret your plots.**
+
+```{r}
+help(chickwts)
+
+feed <- ggplot(chickwts)
+feed <- feed + geom_boxplot(mapping = aes(x = feed,
+                                          y = weight))
+feed
+```
+
+From the histogram above, it is clear that two main feed types could be used to
+create birds that weighed consistently heavy. The food type casein has the 
+highest median score and their interquartile range does better than all other 
+feed types but one. That other feed type, sunflower, does the best out of any 
+feed type at consistently producing birds near the same weight. This is 
+captured in sunflower's interquartile range, with it being the smallest out of 
+all feed types. A farmer's preference on either one of these might have to do 
+with their personal preference. If they want consistently heavier chickens but 
+are willing to accept a greater range of weights, they should purchase casein. 
+If a farmer prioritizes consistency more while still getting an above average 
+weight (in comparison to other feed types), then they should consider sunflower.
+
+On the other end of the spectrum, horsebean feed performs the work, 
+consistently have an interquartile range below any of the interquartile ranges 
+for other feed types. Of course, any consideration on what a chicken farmer 
+should choose depends on the price of each feed as well as any other 
+externalities that the farmer should consider with respect to feed type.
+
+
+## 5. Histograms
+**Prompt: Create a separate histogram using the functions in the ggplot2 package for each of the following four variables in the Cars93 data.frame: Min.Price, Max.Price, Weight, Length. Then, create a histogram of the Price variable conditioning (stratifying) on each level of DriveTrain, which indicates which axle(s) of the car turn the wheels. What would you conclude from these plots?**
+
+```{r}
+help(Cars93)
+
+car1 <- ggplot(Cars93)
+car1 <- car1 + geom_histogram(mapping = aes(Min.Price))
+car1
+
+car2 <- ggplot(Cars93)
+car2 <- car2 + geom_histogram(mapping = aes(Max.Price))
+car2
+
+car3 <- ggplot(Cars93)
+car3 <- car3 + geom_histogram(mapping = aes(Weight))
+car3
+
+car4 <- ggplot(Cars93)
+car4 <- car4 + geom_histogram(mapping = aes(Length))
+car4
+
+car5 <- ggplot(Cars93)
+car5 <- car5 + geom_histogram(mapping = aes(Price)) + 
+      facet_wrap(~ DriveTrain)
+car5
+```
+
+After examining the histograms, it appears that both *Min.Prince* and 
+*Max.Price* share a positive distribution. The key difference between the two 
+is that *Max.Price* is shifted up the on the price scale more than *Min.Price*.
+
+The *weight* value for cars in 1993 follows a roughly negative distribution, 
+with most cars weighing between 3500-3600 pounds. To contrast *weight*, it 
+appears that the *length* of a car is normally distributed around 180 inches, 
+or 15 feet.
+
+Finally, the stratified histogram illustrates that the vast number of cars 
+being sold have front axis drive trains, with few having 4-wheel drive or rear 
+wheel driving. The car with the highest midrange price is rear wheel drive car,
+however.

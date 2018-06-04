@@ -1,0 +1,145 @@
+---
+title: "Assignment 1"
+author: "Nathan Taylor"
+date: "September 26, 2017"
+output: 
+  html_document: 
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Structures
+
+Both arrays and lists have their uses in R as ways of representing data, 
+however they behave differently. An array can only include elements of a single
+or homogenous nature. This requirement means that the content of an array must
+be the same type (numeric, integer, character, or logical). Additionally, 
+elements within array have three dimensions to them. As a result, each element
+found within an array has a row value, a column value, and a shelf value. 
+Arrays allow for data within R to take on three  dimensions, with each shelf
+existing 'behind' or 'in front of' another. An example of an array is below 
+with 3 rows, 4 columns, and two shelves:
+
+```{r}
+argh <- array(rnorm(24,50,12), dim = c(3, 4, 2))
+argh
+```
+
+A list, on the other hand, has more flexibility in terms of its content because
+it allows its elements to be different types (numeric, integer, character, or
+logical) or even different manners of representing data in R, such as a list, 
+matrix, or dataframe. The limiting factor behind a list is the fact that it 
+exists only in one dimension, so its contents do not show up in table format 
+with row and column values or in shelves with a shelving value. An example of 
+a list can be found below:
+
+```{r}
+lat <- list(argh, "carnival", 3.14)
+lat
+```
+
+
+# Style
+
+```{r}
+# create vector based on values, create new vector with negative values, then
+# find which values in the second list are greater than zero
+a <- c(5, -2, 3, -4, 1, NA)
+b <- a * -1
+b[b>0]
+
+# unsure of what's going on here, but a comment belongs here describing what
+# this code is doing
+num <- 1
+my_condition <- round(runif(1, 0, 1))
+if (my_condition) {
+  num <- num + 1
+  print(paste("num =", num, sep=" "))
+} else {
+  print("false")
+}
+
+# make an integer sequence from 1 to 50
+y <- 1:50
+
+# test if a number in the value y is even
+y%%2 == 0
+
+# subset by the test above
+y_even <- y%%2 == 0
+
+# create a data frame from a matrix with column labels
+x <- matrix(c(23, 34, 35, 6, 87, 39, 21, 14, 99), nrow = 3, ncol = 3)
+df <- as.data.frame(x)
+names(df) <- c("reading_scores",
+               "math_scores",
+               "writing_scores")
+
+# create a function that finds the mean
+mean <- function(x) {
+  sum(x) / length(x)
+}
+```
+
+# Subsetting a `data.frame`
+
+```{r}
+View(state.x77)
+
+# NY Data, including frost and murder
+state.x77["New York", ]
+
+# NY frost & murder, respectively
+state.x77["New York", c("Frost", "Murder")]
+
+# NY Murder, by row and column number
+state.x77[32, 5]
+
+# NY Frost, by row and column number
+state.x77[32, 7]
+```
+
+# Manipulating Data
+
+```{r}
+# load dplyr
+library("dplyr")
+
+# see that airquality measures wind in mph
+help(airquality)
+
+# converting mph to kph
+airquality <- transmute(airquality, Ozone = Ozone, 
+                                    Solar.R = Solar.R, 
+                                    Wind = Wind * 1.609, 
+                                    Temp = Temp, 
+                                    Month = Month, 
+                                    Day = Day)
+airquality
+```
+
+# Stratifying
+
+```{r}
+# create database and load dplyr
+cdc <- read.csv("https://www.openintro.org/stat/data/cdc.csv")
+library("dplyr")
+
+# create new variable based on differences between weight and wtdesire
+cdc <- cdc %>% mutate(d_j = wtdesire - weight)
+
+# create subgroups based on general health and smoking with means & medians
+# for each
+health <- group_by(cdc, genhlth, smoke100) %>%
+  summarize(avg_diff = mean(d_j, na.rm = TRUE),
+            med_diff = median(d_j, na.rm = TRUE))
+health
+```
+
+From the results, I can conclude that people included in this data frame have 
+a lower desired weight than their actual weight. This finding appears 
+independent of a person's general health status or whether they have smoked
+in the past 100 days or not. Additionally, the less healthy someone reports themselves to be, the more weight they wish to lose as all differences in peopls's desired weight and actual weights are negative. It appear from this cursory look that smoking does not have as significant of an effect on the difference between actual weight and desired weight as the self-reported state of general health.
