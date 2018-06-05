@@ -8,6 +8,7 @@ output:
     toc_float: true
     theme: yeti
     highlight: tango
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -78,7 +79,7 @@ Mean <- function(x) {
 **Prompt: In the RStudio console, call** `View(state.x77)` **to look at a spreadsheet-like representation of these data. Then write R code that extracts the data for New York on the variables Frost and Murder in three different ways.**
 
 ```{r}
-View(state.x77)
+as.data.frame(state.x77)
 
 # NY Data, including frost and murder
 state.x77["New York", ]
@@ -98,7 +99,7 @@ state.x77[32, 7]
 
 ```{r}
 # load dplyr
-library("dplyr")
+library(dplyr)
 
 # see that airquality measures wind in mph
 help(airquality)
@@ -122,7 +123,8 @@ cdc <- read.csv("https://www.openintro.org/stat/data/cdc.csv")
 library(dplyr)
 
 # create new variable based on differences between weight and wtdesire
-cdc <- cdc %>% mutate(d_j = wtdesire - weight)
+cdc <- cdc %>% 
+  mutate(d_j = wtdesire - weight)
 
 # create subgroups based on general health and smoking with means & medians
 # for each
