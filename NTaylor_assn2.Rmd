@@ -113,7 +113,7 @@ It is true.
 # 3. Apartment Prices
 **Prompt: Use the functions in the ggplot2 package to create a scatterplot between totalprice and one other numeric variable (possibly with transformations, rescalings, etc.) using relevant discrete variables to distinguish points by size, color, and / or symbol that is explained in a legend. What do you discover by visualizing the data this way?**
 
-I wanted to examine the relationship between the area of an apartment and the total price for the apartment in the data frame **apts**. Using ggplot2, I graphed *totalprice* as a function of *area*.
+I wanted to examine the relationship between the area of an apartment and the total price for the apartment in the data frame `apts`. Using ggplot2, I graphed `totalprice` as a function of `area`.
 
 ```{r}
 apts <- readRDS(gzcon(url('https://courseworks.columbia.edu/x/pJdP39')))
