@@ -1,5 +1,5 @@
 ---
-title: "QMSS 4058: Assignment #2"
+title: "GR4058 Data Mining Assignment #2"
 author: "Nathan Taylor"
 date: "Tuesday, October 10, 2017"
 output: 
@@ -17,7 +17,7 @@ library(tidyverse)
 library()
 ```
 
-## 1. Matrix Algebra
+# 1. Matrix Algebra
 **Prompt: Question 4 on pages 301 – 302 of Moore and Siegel. You can use R.**
 
 ```{r, error = TRUE}
@@ -84,7 +84,7 @@ C %*% B
 ```
 
 
-## 2. Inverse of Matrices
+# 2. Inverse of Matrices
 **Prompt: Is it true that ... presuming that all matrices and vectors are conformable for multiplication and that W^-􀀀1 exists? Show your work as to why or whyot n.**
 
 It is true. Please note that I am sure how to make the math code below 'tidy', 
@@ -117,7 +117,7 @@ any other formatting oversights.
 \]
 
 
-## 3. Apartment Prices
+# 3. Apartment Prices
 **Prompt: Use the functions in the ggplot2 package to create a scatterplot between totalprice and one other numeric variable (possibly with transformations, rescalings, etc.) using relevant discrete variables to distinguish points by size, color, and / or symbol that is explained in a legend. What do you discover by visualizing the data this way?**
 
 I wanted to examine the relationship between the area of an apartment and the 
@@ -161,7 +161,7 @@ aptsp
 
 It almost appears linear, but has some bumps and a curve to it. 
 
-## 4. Making Plots
+# 4. Making Plots
 **Prompt: Look at help(chickwts) for information on the chickwts data.frame. Produce a box-and-whiskers plot of weight for each of the six types of feed using the ggplot2 package. Interpret your plots.**
 
 ```{r}
@@ -192,7 +192,7 @@ should choose depends on the price of each feed as well as any other
 externalities that the farmer should consider with respect to feed type.
 
 
-## 5. Histograms
+# 5. Histograms
 **Prompt: Create a separate histogram using the functions in the ggplot2 package for each of the following four variables in the Cars93 data.frame: Min.Price, Max.Price, Weight, Length. Then, create a histogram of the Price variable conditioning (stratifying) on each level of DriveTrain, which indicates which axle(s) of the car turn the wheels. What would you conclude from these plots?**
 
 ```{r}

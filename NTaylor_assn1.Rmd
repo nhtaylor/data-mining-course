@@ -1,55 +1,45 @@
 ---
-title: "Assignment 1"
+title: "GR4058 Data Mining Assignment 1"
 author: "Nathan Taylor"
 date: "September 26, 2017"
 output: 
-  html_document: 
-    number_sections: yes
+  html_document:
+    toc: true
+    toc_float: true
+    theme: yeti
+    highlight: tango
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Data Structures
+# 1. Data Structures
+**Prompt: In what ways does a array differ from a list in R? Use R code to create one of each.** 
 
-Both arrays and lists have their uses in R as ways of representing data, 
-however they behave differently. An array can only include elements of a single
-or homogenous nature. This requirement means that the content of an array must
-be the same type (numeric, integer, character, or logical). Additionally, 
-elements within array have three dimensions to them. As a result, each element
-found within an array has a row value, a column value, and a shelf value. 
-Arrays allow for data within R to take on three  dimensions, with each shelf
-existing 'behind' or 'in front of' another. An example of an array is below 
-with 3 rows, 4 columns, and two shelves:
+Both arrays and lists have their uses in R as ways of representing data but they behave differently. An array can only include elements of a single homogeneous nature. This requirement means that the content of an array must be the same type (numeric, integer, character, or logical) and never a mixture of them. Additionally, elements within array have three dimensions to them. As a result, each element found within an array has a row value, a column value, and a shelf value. Arrays allow for data within R to take on three  dimensions, with each shelf existing 'behind' or 'in front of' another. An example of an array is below with 3 rows, 4 columns, and two shelves:
 
 ```{r}
 argh <- array(rnorm(24,50,12), dim = c(3, 4, 2))
 argh
 ```
 
-A list, on the other hand, has more flexibility in terms of its content because
-it allows its elements to be different types (numeric, integer, character, or
-logical) or even different manners of representing data in R, such as a list, 
-matrix, or dataframe. The limiting factor behind a list is the fact that it 
-exists only in one dimension, so its contents do not show up in table format 
-with row and column values or in shelves with a shelving value. An example of 
-a list can be found below:
+A list, on the other hand, has more flexibility in terms of its content because it allows its elements to be different types (numeric, integer, character, or logical) or even different manners of representing data in R, such as a list, matrix, or data frame. The limiting factor behind a list is the fact that it exists only in one dimension, so its contents do not show up in table format with row and column values or in shelves with a shelving value. An example of a list can be found below:
 
 ```{r}
 lat <- list(argh, "carnival", 3.14)
 lat
 ```
 
-
-# Style
+# 2. Style
+**Prompt: Rewrite the following code so that it is consistent with Hadley Wickham’s R style guide.** 
 
 ```{r}
 # create vector based on values, create new vector with negative values, then
 # find which values in the second list are greater than zero
 a <- c(5, -2, 3, -4, 1, NA)
 b <- a * -1
-b[b>0]
+b[b > 0]
 
 # unsure of what's going on here, but a comment belongs here describing what
 # this code is doing
@@ -57,7 +47,7 @@ num <- 1
 my_condition <- round(runif(1, 0, 1))
 if (my_condition) {
   num <- num + 1
-  print(paste("num =", num, sep=" "))
+  print(paste("num =", num, sep = " "))
 } else {
   print("false")
 }
@@ -66,10 +56,10 @@ if (my_condition) {
 y <- 1:50
 
 # test if a number in the value y is even
-y%%2 == 0
+y %% 2 == 0
 
 # subset by the test above
-y_even <- y%%2 == 0
+y_even <- y %% 2 == 0
 
 # create a data frame from a matrix with column labels
 x <- matrix(c(23, 34, 35, 6, 87, 39, 21, 14, 99), nrow = 3, ncol = 3)
@@ -79,12 +69,13 @@ names(df) <- c("reading_scores",
                "writing_scores")
 
 # create a function that finds the mean
-mean <- function(x) {
+Mean <- function(x) {
   sum(x) / length(x)
 }
 ```
 
-# Subsetting a `data.frame`
+# 3. Subsetting a Data Frame
+**Prompt: In the RStudio console, call** `View(state.x77)` **to look at a spreadsheet-like representation of these data. Then write R code that extracts the data for New York on the variables Frost and Murder in three different ways.**
 
 ```{r}
 View(state.x77)
@@ -102,7 +93,8 @@ state.x77[32, 5]
 state.x77[32, 7]
 ```
 
-# Manipulating Data
+# 4. Manipulating Data
+**Prompt: In the RStudio console, type** `help(airquality)` **to see information on a data frame regarding the air quality in New York. Then: Replace the Wind variable with windspeed measured in kilometers per hour.**
 
 ```{r}
 # load dplyr
@@ -121,12 +113,13 @@ airquality <- transmute(airquality, Ozone = Ozone,
 airquality
 ```
 
-# Stratifying
+# 5. Stratifying
+**Prompt: Put the following line into a chunk in your RMarkdown file** `cdc <- read.csv("https://www.openintro.org/stat/data/cdc.csv")` **to bring a data.frame called cdc into R whose variables are described here. Use the dplyr package in conjunction with the conditioning variables genhlth and smoke100 to calculate the mean and median of the difference between wtdesire and weight for each of the subgroups defined by the intersection of these two conditioning variables. What do you conclude from the results?**
 
 ```{r}
 # create database and load dplyr
 cdc <- read.csv("https://www.openintro.org/stat/data/cdc.csv")
-library("dplyr")
+library(dplyr)
 
 # create new variable based on differences between weight and wtdesire
 cdc <- cdc %>% mutate(d_j = wtdesire - weight)
@@ -139,7 +132,4 @@ health <- group_by(cdc, genhlth, smoke100) %>%
 health
 ```
 
-From the results, I can conclude that people included in this data frame have 
-a lower desired weight than their actual weight. This finding appears 
-independent of a person's general health status or whether they have smoked
-in the past 100 days or not. Additionally, the less healthy someone reports themselves to be, the more weight they wish to lose as all differences in peopls's desired weight and actual weights are negative. It appear from this cursory look that smoking does not have as significant of an effect on the difference between actual weight and desired weight as the self-reported state of general health.
+From the results, I can conclude that people included in this data frame have a lower desired weight than their actual weight. This finding appears independent of a person's general health status or whether they have smoked in the past 100 days or not. Additionally, the less healthy someone reports themselves to be, the more weight they wish to lose as all differences in people's desired weight and actual weights are negative. It appear from this cursory look that smoking does not have as significant of an effect on the difference between actual weight and desired weight as the self-reported state of general health.
