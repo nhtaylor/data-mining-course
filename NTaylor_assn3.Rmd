@@ -1,0 +1,132 @@
+---
+title: "QMSS 4058: Assignment #3"
+author: "Nathan Taylor"
+date: "Monday, October 23, 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: yeti
+    highlight: tango
+---
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+## PACKAGES & LIBRARIES
+library("pcaPP")
+library("tidyverse")
+library("tm")
+library("SnowballC")
+library("topicmodels")
+library("Matrix")
+```
+
+## 1. Principal Components Analysis
+**Prompt: In this problem, we are going to do a Principal Components Analysis (PCA) “manually” without the aid of the prcomp() function.**
+
+```{r}
+X <- as.matrix(read.csv("dataset3.csv"))
+Z <- scale(X)
+Z <- svd(Z)
+Z$d
+
+sdev <- Z$d / sqrt(100 - 1)
+sdev
+pvar <- sdev ^ 2
+pvar
+pve <- pvar / sum(pvar)
+pve
+```
+
+According to above chart, which is the percentage of variation in the 
+standardized variables, I would only technically need one variable to retain 
+0.51 of the proportion of variance from the PCA approximation, since one 
+variable represents more than 99% of the variance. Usually, principal 
+components has two variables.
+
+```{r}
+## w <- 3.15729565
+## matrix(t(matrix(w,length(w),100)))
+## W <- do.call( rbind, rep(list(w), 100) )
+## W <- diag(W, nrow = 100, ncol = 1)
+  
+## Y <- Z$u[, 1] %*%
+## Y
+```
+I didn't know how to get R to to do what letter E required for the 
+principal components analysis part.
+
+
+## 2. Clustering
+**Prompt: Using the same original dataset as in the first problem, perform a K-means clustering with a “reasonable” number of clusters. Show how you arrived at this number of clusters. Which observations fell into which cluster?**
+
+```{r}
+km_X <- kmeans(X, centers = 2)
+km_X
+plot(X, col = km_X$cluster + 1, pch = 20, cex = 1,
+     main="K-Means Clustering Results for X with K=2", xlab = "", ylab = "")
+
+km_X1 <- kmeans(X, centers = 3)
+km_X1
+plot(X, col = km_X1$cluster + 1, pch = 20, cex = 1,
+     main="K-Means Clustering Results for X with K=3", xlab = "", ylab = "")
+
+km_X2 <- kmeans(X, centers = 4)
+km_X2
+plot(X, col = km_X2$cluster + 1, pch = 20, cex = 1,
+     main="K-Means Clustering Results for X with K=4", xlab = "", ylab = "")
+
+km_X3 <- kmeans(X, centers = 5)
+km_X3
+plot(X, col = km_X3$cluster + 1, pch = 20, cex = 1,
+     main="K-Means Clustering Results for X with K=5", xlab = "", ylab = "")
+```
+I decided overall, five distinct clusters would represent the data well.
+It's best, I think, to help visualize the plots in order to see the data.
+My main concern was that the outliers on both ends of the data would 
+negatively influence the structure within each cluster. I decided to plot
+clusters K = 2 through K = 5 just to explore what might appear best. It's 
+possible that going with four or even clusters might be more advantages because
+the middling points are more likely to be clustered together, but there would
+be advantages and disadvantages to any decsion. The following R output should
+show which observations fell into which cluster:
+
+```{r}
+km_X3$cluster
+```
+
+## 3. Text Mining
+**Prompt: (A) Use the functions in the tm package to create an appropriate DocumentTermMatrix for this corpus. (B) Use the LDA function in the topicmodels package to perform Latent Dirichlet Allocation across k = 3 clusters. (C) Based on your reading of a few important speeches, what topics do each of these three clusters represent?**
+
+
+```{r}
+unzip("Speeches_May_1967.zip")
+dir("Speeches_May_1967")
+
+speeches <- Corpus(DirSource(directory = "Speeches_May_1967"))
+speeches
+
+## cleaning up speeches for the dtm
+speeches <- tm_map(speeches, content_transformer(tolower))
+speeches <- tm_map(speeches, stripWhitespace) 
+speeches <- tm_map(speeches, removePunctuation)
+speeches <- tm_map(speeches, removeNumbers)
+speeches <- tm_map(speeches, removeWords, stopwords("english"))
+speeches <- tm_map(speeches, stemDocument)
+
+speech.dtm <- DocumentTermMatrix(speeches)
+speech.dtm
+## colnames(speech.dtm)
+
+speech.clust <- LDA(weightTf(speech.dtm), k = 3)
+round.clust <- round(posterior(speech.clust, speech.dtm)$topics, digits = 3)
+round.clust
+```
+
+AFter examining the first two speeches in the first cluster that had a 
+probability of 1.00 (speeches 02 and 06), this cluster appears to most closely
+be concerned with policies related to education, job training, and labor 
+practices. The second cluster, represented by speeches 04 and 07, focuses 
+primarily on programs related to military matters or service to one's country 
+(Selective Service, Universal Military Training and Service Act, etc.). 
+Finally, the last cluster of texts emphasizes economic matters both in the 
+domestic and foreign policy spheres.
