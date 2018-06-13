@@ -6,7 +6,7 @@ Assignment 1: Data Structures, Code Style, Subsetting Data Frames, Manipulating 
 
 Assignment 2: Matrix Algebra, Exploratory Data Analysis, Data Visualization
 
-Assignment 3:
+Assignment 3: Unsupervised Learning & Text Analysis
 
 Assignment 4:
 
