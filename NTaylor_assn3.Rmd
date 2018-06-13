@@ -1,59 +1,64 @@
 ---
-title: "QMSS 4058: Assignment #3"
+title: "GR4058 Data Mining Assignment #3"
 author: "Nathan Taylor"
 date: "Monday, October 23, 2017"
 output: 
   html_document:
+    keep_md: true
     toc: true
     toc_float: true
     theme: yeti
     highlight: tango
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## PACKAGES & LIBRARIES
-library("pcaPP")
-library("tidyverse")
-library("tm")
-library("SnowballC")
-library("topicmodels")
-library("Matrix")
+library(tm)
+library(SnowballC)
+library(topicmodels)
+library(Matrix)
 ```
 
 ## 1. Principal Components Analysis
 **Prompt: In this problem, we are going to do a Principal Components Analysis (PCA) “manually” without the aid of the prcomp() function.**
 
 ```{r}
+# reading in data
+set.seed(12345)
 X <- as.matrix(read.csv("dataset3.csv"))
+
+# scaling variables
 Z <- scale(X)
-Z <- svd(Z)
-Z$d
 
-sdev <- Z$d / sqrt(100 - 1)
+# perform singular value decomposition
+Z_svd <- svd(Z)
+sdev <- Z_svd$d / sqrt(nrow(Z) - 1)
 sdev
-pvar <- sdev ^ 2
-pvar
-pve <- pvar / sum(pvar)
-pve
-```
 
-According to above chart, which is the percentage of variation in the 
-standardized variables, I would only technically need one variable to retain 
-0.51 of the proportion of variance from the PCA approximation, since one 
-variable represents more than 99% of the variance. Usually, principal 
-components has two variables.
 
-```{r}
-## w <- 3.15729565
-## matrix(t(matrix(w,length(w),100)))
-## W <- do.call( rbind, rep(list(w), 100) )
-## W <- diag(W, nrow = 100, ncol = 1)
-  
-## Y <- Z$u[, 1] %*%
-## Y
+# truncate to preserve 95% of variances
+cv <- round(cumsum(sdev^2) / crossprod(sdev)[1], digits = 3)
+cv
+K <- which(cv > 0.95)[1]
+K
+
+# creating the plane, with at least two components
+K <- 2
+Y <- Z_svd$u[, 1:K, drop = FALSE] %*% diag(sdev[1:K], nrow = K, ncol = K)
+
+# creating plot
+library(ggplot2)
+ggplot(as.data.frame(Y)) + 
+  geom_point(aes(x = V1, y = V2))
+
+## doing PCA in robust manner to see difference
+library(pcaPP) 
+par(mar = rep(2, times = 4) + .1, las = 1, cex = 0.7)
+biplot(PCAproj(X, k = 2, scale = sd))
 ```
-I didn't know how to get R to to do what letter E required for the 
-principal components analysis part.
 
 
 ## 2. Clustering
@@ -73,22 +78,15 @@ plot(X, col = km_X1$cluster + 1, pch = 20, cex = 1,
 km_X2 <- kmeans(X, centers = 4)
 km_X2
 plot(X, col = km_X2$cluster + 1, pch = 20, cex = 1,
-     main="K-Means Clustering Results for X with K=4", xlab = "", ylab = "")
+     main = "K-Means Clustering Results for X with K=4", xlab = "", ylab = "")
 
 km_X3 <- kmeans(X, centers = 5)
 km_X3
 plot(X, col = km_X3$cluster + 1, pch = 20, cex = 1,
-     main="K-Means Clustering Results for X with K=5", xlab = "", ylab = "")
+     main = "K-Means Clustering Results for X with K=5", xlab = "", ylab = "")
 ```
-I decided overall, five distinct clusters would represent the data well.
-It's best, I think, to help visualize the plots in order to see the data.
-My main concern was that the outliers on both ends of the data would 
-negatively influence the structure within each cluster. I decided to plot
-clusters K = 2 through K = 5 just to explore what might appear best. It's 
-possible that going with four or even clusters might be more advantages because
-the middling points are more likely to be clustered together, but there would
-be advantages and disadvantages to any decsion. The following R output should
-show which observations fell into which cluster:
+
+I decided that, overall, five distinct clusters would represent the data well. It's best, I think, to help visualize the plots in order to see the data. My main concern was that the outliers on both ends of the data would  negatively influence the structure within each cluster. I decided to plot clusters K = 2 through K = 5 just to explore what might appear best. It's possible that going with four or fewer clusters might be more advantages because the middling points are more likely to be clustered together, but there would be advantages and disadvantages to any decsion. The following R output should show which observations fell into which cluster:
 
 ```{r}
 km_X3$cluster
